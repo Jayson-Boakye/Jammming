@@ -1,3 +1,7 @@
+.App {
+    margin: 30px;
+}
+
 .divider {
     display: grid;
     grid-template-columns: 1fr 1fr;

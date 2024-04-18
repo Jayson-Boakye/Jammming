@@ -3,6 +3,7 @@ import "./styling/App.css";
 import SearchBar from "./components/SearchBar";
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
+import { Spotify } from './Util/Spotify/Spotify';
 
 function App() {
     const [searchResults, setSearchResults] = useState([
@@ -35,19 +36,60 @@ function App() {
       }
     ]);
 
+    const addTrack = track => {
+      const existingTrack = playlistTrack.find(t => t.id === track.id);
+      const newTrack = playlistTrack.concat(track);
+      if (existingTrack) {
+        console.log(`Track already exists`);
+      } else {
+        setPlayListTrack(newTrack);
+      }
+    }
+
+    const removeTrack = track => {
+      const existingTrack = playlistTrack.filter(t => t.id !== track.id);
+      setPlayListTrack(existingTrack);
+    }
+
+    const updatePlaylistName = name => {
+      setPlaylistName(name);
+    }
+
+    const savePlaylist = () => {
+      const trackURIs = playlistTrack.map(t => t.uri);
+      Spotify.savePlaylist(playlistName, trackURIs).then(() => {
+        updatePlaylistName("New Playlist");
+        setPlayListTrack([]);
+      });
+    }
+
+    const search = term => {
+      Spotify.search(term).then((result) => setSearchResults(result));
+      console.log(term);
+    }
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>This is a heading</h1>
       </header>
-      <SearchBar />
+      <SearchBar onSearch={search}/>
       <div className='divider'>
         <div>
-        <SearchResults userSearchResults={searchResults}/>
+        <SearchResults userSearchResults={searchResults} 
+        onAdd={addTrack} 
+        />
         </div>
+
         <div>
-        <Playlist playlistName={playlistName} playlistTrack={playlistTrack}/>
+        <Playlist playlistName={playlistName} 
+        playlistTrack={playlistTrack}
+        onRemove={removeTrack}
+        onNameChange={updatePlaylistName}
+        onSave={savePlaylist}
+        />
         </div>
+
       </div>
     </div>
   );

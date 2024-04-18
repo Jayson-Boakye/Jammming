@@ -1,10 +1,19 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-function SearchBar() {
+function SearchBar({ onSearch }) {
+
+    const [term, setTerm] = useState('');
+
+    const passTerm = () => {
+        onSearch(term);
+    }
+    const handleTermChange = ({ target }) => {
+        setTerm(target.value);
+    }
     return (
         <div className='SearchBar'>
-            <input type='text' placeholder='Enter a song'/>
-            <button>SEARCH</button> 
+            <input type='text' placeholder='Enter a song' onChange={handleTermChange} />
+            <button onClick={passTerm} >SEARCH</button> 
         </div>
     )
 }
